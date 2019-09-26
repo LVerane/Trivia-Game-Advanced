@@ -1,0 +1,21 @@
+.container{
+    text-align: center;
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.jumbotron{
+    height: 298px;
+    padding-bottom: 32px;
+}
+
+h4{
+    margin: 20px;
+}
+
+button{
+    padding: 10px;
+    margin: 10px;
+}
+
+/* add margins and stuff */
