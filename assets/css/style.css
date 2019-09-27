@@ -1,16 +1,26 @@
+body{
+    background: #E9ECEF;
+}
 .container{
+    padding: 24px;
     text-align: center;
+}
+
+.upper{
+    padding-top: 64px;
+}
+
+.main{
     display: flex;
     justify-content: space-evenly;
 }
 
-.jumbotron{
-    height: 298px;
-    padding-bottom: 32px;
+h2, h4, input, .answerOption{
+    margin: 20px;
 }
 
-h4{
-    margin: 20px;
+.answerOption{
+    font-size: 24px;
 }
 
 button{
@@ -18,4 +28,10 @@ button{
     margin: 10px;
 }
 
-/* add margins and stuff */
+#start{
+    margin: 32px 10px 22px;
+}
+
+#submit{
+    display:none;
+}

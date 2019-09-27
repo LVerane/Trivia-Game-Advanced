@@ -2,62 +2,59 @@ $(document).ready(function () {
 
     var triviaDatabase = [
         {
-            question: "A is right",
+            question: "Who is the strongest green hero?",
             answers: [
-                "first answer",
-                "second answer",
-                "third answer"
+                "Shrek",
+                "Hulk",
+                "Green Lantern"
             ],
             correctAnswer: "0",
         },
         {
-            question: "C is right",
+            question: "When asking for a favor, which phrasing should be used?",
             answers: [
-                "first answer",
-                "second answer",
-                "third answer"
+                "Could you please?",
+                "Do you mind?",
+                "Would you kindly?"
             ],
             correctAnswer: "2",
         },
         {
-            question: "B is right",
+            question: "What is the property of a Poring?",
             answers: [
-                "first answer",
-                "second answer",
-                "third answer"
+                "Fire",
+                "Water",
+                "Wind"
             ],
             correctAnswer: "1",
         },
         {
-            question: "C is right",
+            question: "Who is the Rickest Rick?",
             answers: [
-                "first answer",
-                "second answer",
-                "third answer"
+                "J-22",
+                "D-716",
+                "C-137"
             ],
             correctAnswer: "2",
         },
         {
-            question: "B is right",
+            question: "Fish are ___",
             answers: [
-                "first answer",
-                "second answer",
-                "third answer"
+                "Food",
+                "Friends",
+                "Holograms"
             ],
             correctAnswer: "1",
         }
-    ]
+    ];
 
     var unanswered = 0;
-    var right = 0; //need to reset this after the result is presented //tried to only create it inside the function and it didn't work
+    var right = 0;
     var wrong = 0;
-    var time; //maybe I have to reset it somewhere? //time is now a parameter for run() a.k.a. run(time)
+    var time;
     var intervalId;
     var clockRunning = false;
-
     var questionCount = 0; // replaces 'i' in for loops that no longer exist // maybe shouldn't go in ID's
-
-    $("#submit").hide();
 
     function reset(){
         questionCount = 0;
@@ -69,75 +66,53 @@ $(document).ready(function () {
         $("#timeLeft").html('');
     }
 
-    //creating the html for the trivia
     function generateHtml() {
-        // run();
-        $("#allQuestions").html('');//clear it for every question
         $("#score").html('');
-        //$("#score").html("");//this can go somewhere else to not run for every question
-        // for(i=0; i<triviaDatabase.length; i++){ //not doing all of them at once, redo this
-        //if(questionCount<triviaDatabase.length){//maybe do this check on the submit button
-        var newQuestion = $("<h4>").append(triviaDatabase[questionCount].question);
-        $("#allQuestions").append(newQuestion);
-        var newAnswer = $('<div id=question' + questionCount + '>');
+        var newQuestion = $("<h2>").append(triviaDatabase[questionCount].question);
+        $("#allQuestions").html(newQuestion);
+        var newAnswer = $('<div class=answerOption id=question' + questionCount + '>');
 
-        for (j = 0; j < 3; j++) {//replace 3 by a variable down the line
-
+        for (j = 0; j < triviaDatabase[questionCount].answers.length; j++) {
             newAnswer.append('<input type=radio name=answer' + questionCount + ' value=' + j + '>' + triviaDatabase[questionCount].answers[j]);
-            console.log(triviaDatabase[questionCount].answers[j]);
-
             $("#allQuestions").append(newAnswer);
         }
 
-        console.log(newQuestion);
+        $("#instruction").html('Select the right answer and click Submit');
 
-        // questionCount++;
-
-        console.log("questionCount genHtml: " + questionCount);
-
-        //questionCount++; //maybe do that on submit too
-        //}else{ //maybe do an end condition here. maybe it fits better somewhere else
-
-        //}
-        // }
     }
 
-    //check if user answers are right
-    //calculateScore might be split on a count of right answers and a display of the final count
     function calculateScore() {
-        // for(i=0; i<triviaDatabase.length; i++){ // don't think I need that with only one question at a time
         var userAnswer = $('#question' + questionCount).children("input:checked").val();
-        console.log("userAnswer: " + userAnswer);
-        console.log("trivia[questionCount].answer: " + triviaDatabase[questionCount].correctAnswer);
-        if (userAnswer === triviaDatabase[questionCount].correctAnswer) {//could add .wrongAnswer to the triviaDatabase array to tell which ones were left in blank, don't think it's worth it
+        if (userAnswer === triviaDatabase[questionCount].correctAnswer) {
             right++;
-            console.log("right: " + right);
-            $("#score").html('<p>Correct answer!</p>');
+            $("#score").html('<h4>Correct answer!</h4>');
             runAnswer();
-        // }else if (typeof userAnswer === undefined) {
-        //     unanswered++;
-        //     $("#score").html('<p>No answer selected</p>');
+        }else if (typeof userAnswer === 'undefined') {
+            unanswered++;
+            $("#score").html('<h4>No answer selected</h4>');
+            runAnswer();
         } else {
             wrong++;
-            $("#score").html('<p>Wrong answer!</p>');
+            $("#score").html('<h4>Wrong answer!</h4>');
             runAnswer();
-        }//check if userAnswer is undefined? to know if nothing was selected
-        console.log("questionCount calcScore: " + questionCount);
+        }
         $("#allQuestions").html('');
-        // $("#score").append('');
-        // }
     }
 
     function finalScore() {
-        $("#score").append('<p> You got ' + right + ' right answers! </p>');
-        $("#score").append('<p> You got ' + wrong + ' wrong answers! </p>');
+        $("#score").html('');
+        $("#score").append('<h4> You got ' + right + ' right answers!</h4>');
+        $("#score").append('<h4> You got ' + wrong + ' wrong answers!</h4>');
+        if(unanswered > 0){
+            $("#score").append('<h4> You failed to answer ' + unanswered + ' questions!</h4>');
+        }
+        $("#instruction").html('Press Start to Begin the Quizz!');
         $("#timeLeft").html('');
-        right = 0;
-        wrong = 0;
+        $("#start").html('Start');
     }
 
-    function runQuestion() {//change it to run(time) will probably make it easier to reuse
-        time = 20;//reset time every run //now received as parameter
+    function runQuestion() {
+        time = 20;
         if (!clockRunning) {// prevents multiple instances of the clock running at the same time
             clockRunning = true;
             $("#timeLeft").html(time);
@@ -151,28 +126,37 @@ $(document).ready(function () {
 
         if (time === 0) {
             stop();
+            unanswered = triviaDatabase.length - (right + wrong);
+            $("#submit").hide();
             finalScore();
             $("#allQuestions").html('');
         }
     }
 
-    function runAnswer() {//change it to run(time) will probably make it easier to reuse
-        time = 2;//reset time every run //now received as parameter
-        if (!clockRunning) {// prevents multiple instances of the clock running at the same time
+    function runAnswer() {
+        time = 1;
+        if (!clockRunning) {
             clockRunning = true;
-            $("#timeLeft").html(time);
+            //don't need to see that timer
+            //$("#timeLeft").html(time);
             intervalId = setInterval(decrementAnswer, 1000);
         }
     }
 
     function decrementAnswer() {
         time--;
-        $("#timeLeft").html(time);
-
+        //don't need to see that timer
+        //$("#timeLeft").html(time);
         if (time === 0) {
             stop();
-            $("#submit").show();
-            pauseBetweenStuff();
+            questionCount++;
+            if (questionCount < triviaDatabase.length) {
+                $("#submit").show();
+                generateHtml();
+                runQuestion();
+            } else {
+                finalScore();
+            };
         }
     }
 
@@ -181,47 +165,19 @@ $(document).ready(function () {
         clockRunning = false;
     }
 
-    //start and submit buttons are going to bug out if pressed at the wrong time. need to hide them somehow
-
-    //start. set for timer now. might have to call function that makes the html trivia
-    $("#start").on("click", function () {//make a reset function and call it here? use a boolean to check? rename it between start/restart?
+    $("#start").on("click", function () {
         reset();
-        // $("#submit").html('<button id=submitButton>Submit</button>');
         generateHtml();
-        //$("#submit").html('<button id=submitButton>Submit</button>'); //not working for some reason
-        runQuestion(); // call run() from generateHtml?
+        runQuestion();
+        $("#start").html('Restart');
         $("#submit").show();
     });
 
-    // make a function to check and count "right" and just call it with .click
     $("#submit").on("click", function () {
         $("#submit").hide();
+        $("#timeLeft").html('');
         stop();
-        calculateScore(); //this should just update 'right' and 'wrong'
-        //make this another function to pause between questions
-        // if(questionCount < triviaDatabase.length-1){//do the check // was === at first
-        //     //run(); //so questions keep coming // call run from generateHtml? //moved to calculate score. this is going to be a problem
-        //     questionCount++; //moved to the generateHtml function // and then moved back
-        //     generateHtml(); // update the question
-        // }else{
-        //     finalScore(); //this should display the finalscore
-        // }
-
+        calculateScore();
     });
 
-    function pauseBetweenStuff() {
-        if (questionCount < triviaDatabase.length - 1) {//do the check // was === at first
-            //run(); //so questions keep coming // call run from generateHtml? //moved to calculate score. this is going to be a problem
-            questionCount++; //moved to the generateHtml function // and then moved back
-            generateHtml(); // update the question
-            runQuestion();
-        } else {
-            finalScore(); //this should display the finalscore
-        }
-    };
-
 });
-//result screen for every submit...  adapt from calculate score? <-kinda done, need to use (hidden) timer to go back to questions
-
-//got the base code to work as expected, need to add a restart option (probably reset everything on start button) and
-//fix unwanted button behavior (submit working before first question is presented. add boolean?)
